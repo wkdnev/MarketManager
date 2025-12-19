@@ -1,0 +1,172 @@
+/* Brand Section */
+.brand-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: white;
+}
+
+.brand-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-shield {
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    color: #1f2937;
+    font-weight: 400;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.logo-nist {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #5b6fd8 0%, #7c5cdb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.logo-compliance {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-top: -2px;
+}
+
+/* Mobile Toggle */
+.navbar-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 3rem;
+    height: 3rem;
+    color: white;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: none;
+    border-radius: 8px;
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.5rem rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s;
+}
+
+.navbar-toggler:checked {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation Items */
+.nav-item {
+    margin: 0.25rem 1rem;
+}
+
+.nav-item ::deep .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #4b5563;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.nav-item ::deep .nav-link i {
+    font-size: 1.125rem;
+    width: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-item ::deep .nav-link .nav-icon {
+    font-size: 1.25rem;
+    width: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+    color: #1f2937;
+    font-weight: 400;
+}
+
+.nav-item ::deep .nav-link:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    transform: translateX(4px);
+}
+
+.nav-item ::deep a.active {
+    background-color: #e5e7eb;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.nav-item ::deep a.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 70%;
+    background-color: #5b6fd8;
+    border-radius: 0 2px 2px 0;
+}
+
+/* Nav Section Header */
+.nav-section-header {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    padding: 0.5rem 2rem;
+    margin-top: 0.5rem;
+}
+
+/* Nav Divider */
+.nav-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 1rem 1.5rem;
+}
+
+.nav-scrollable {
+    display: none;
+}
+
+.navbar-toggler:checked ~ .nav-scrollable {
+    display: block;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .nav-scrollable {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+
+        /* Allow sidebar to scroll for tall menus */
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}

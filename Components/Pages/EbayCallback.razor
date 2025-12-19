@@ -1,0 +1,116 @@
+@page "/ebay/callback"
+@using MarketManager.Services
+@using MarketManager.Models
+@using Microsoft.AspNetCore.WebUtilities
+@inject EbayAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+
+<PageTitle>eBay Authentication</PageTitle>
+
+<div class="callback-container">
+    @if (isProcessing)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <h3 class="mt-3">Connecting to eBay...</h3>
+            <p>Please wait while we complete the authentication process.</p>
+        </div>
+    }
+    else if (isSuccess)
+    {
+        <div class="alert alert-success">
+            <h4>✓ Successfully Connected!</h4>
+            <p>Your eBay account has been successfully authenticated.</p>
+            <p class="mb-0">Redirecting to dashboard...</p>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            <h4>⚠ Authentication Failed</h4>
+            <p><strong>Error:</strong> @errorMessage</p>
+            <button class="btn btn-primary" @onclick="RetryAuthentication">Try Again</button>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isProcessing = true;
+    private bool isSuccess = false;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var queryParams = QueryHelpers.ParseQuery(uri.Query);
+
+            // Check for error in callback
+            if (queryParams.TryGetValue("error", out var error))
+            {
+                errorMessage = $"eBay returned an error: {error}";
+                if (queryParams.TryGetValue("error_description", out var errorDesc))
+                {
+                    errorMessage += $" - {errorDesc}";
+                }
+                isProcessing = false;
+                return;
+            }
+
+            // Get authorization code
+            if (!queryParams.TryGetValue("code", out var code))
+            {
+                errorMessage = "No authorization code received from eBay";
+                isProcessing = false;
+                return;
+            }
+
+            // Verify state parameter (optional but recommended for security)
+            if (queryParams.TryGetValue("state", out var state))
+            {
+                // TODO: Validate state matches the one sent in the initial request
+                // For now, we'll just log it
+                Console.WriteLine($"Received state: {state}");
+            }
+
+            // Exchange code for tokens
+            var tokenResponse = await AuthService.ExchangeCodeForTokenAsync(code.ToString());
+
+            if (tokenResponse == null)
+            {
+                errorMessage = "Failed to exchange authorization code for access token";
+                isProcessing = false;
+                return;
+            }
+
+            // Save refresh token to configuration (in production, this should be stored securely)
+            if (!string.IsNullOrEmpty(tokenResponse.refresh_token))
+            {
+                // Note: In a real application, you would save this to a secure database
+                Console.WriteLine($"Refresh token received. Store this securely: {tokenResponse.refresh_token}");
+                Console.WriteLine("Update your appsettings.json with the refresh token to maintain persistent access.");
+            }
+
+            isSuccess = true;
+            isProcessing = false;
+
+            // Redirect to dashboard after 2 seconds
+            await Task.Delay(2000);
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An unexpected error occurred: {ex.Message}";
+            isProcessing = false;
+        }
+    }
+
+    private void RetryAuthentication()
+    {
+        NavigationManager.NavigateTo("/ebay/settings");
+    }
+}

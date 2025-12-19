@@ -1,0 +1,205 @@
+@page "/ebay/settings"
+@using MarketManager.Services
+@using MarketManager.Models
+@using Microsoft.Extensions.Options
+@inject EbayAuthService AuthService
+@inject IOptions<EbayConfig> ConfigOptions
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>eBay Settings</PageTitle>
+
+<div class="settings-container">
+    <h2>eBay Integration Settings</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Connection Status</h5>
+        </div>
+        <div class="card-body">
+            @if (AuthService.IsAuthenticated())
+            {
+                <div class="alert alert-success">
+                    <h6>✓ Connected to eBay</h6>
+                    <p class="mb-0">Your application is authenticated and ready to use eBay APIs.</p>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <h6>⚠ Not Connected</h6>
+                    <p class="mb-0">You need to authenticate with eBay to use this application.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Configuration</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label"><strong>Environment:</strong></label>
+                <p class="form-control-plaintext">@config.Environment</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><strong>Client ID:</strong></label>
+                <p class="form-control-plaintext">@(string.IsNullOrEmpty(config.ClientId) ? "Not configured" : MaskCredential(config.ClientId))</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><strong>Redirect URI:</strong></label>
+                <p class="form-control-plaintext">@config.RedirectUri</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><strong>Has Refresh Token:</strong></label>
+                <p class="form-control-plaintext">@(string.IsNullOrEmpty(config.RefreshToken) ? "No" : "Yes")</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Authentication</h5>
+        </div>
+        <div class="card-body">
+            @if (string.IsNullOrEmpty(config.ClientId) || string.IsNullOrEmpty(config.ClientSecret))
+            {
+                <div class="alert alert-danger">
+                    <h6>⚠ Configuration Required</h6>
+                    <p>You need to configure your eBay API credentials in <code>appsettings.json</code>:</p>
+                    <ol>
+                        <li>Create an eBay Developer account at <a href="https://developer.ebay.com" target="_blank">developer.ebay.com</a></li>
+                        <li>Create a new application in your eBay developer account</li>
+                        <li>Get your Client ID (App ID) and Client Secret (Cert ID)</li>
+                        <li>Add your redirect URI: <code>@config.RedirectUri</code></li>
+                        <li>Update <code>appsettings.json</code> with your credentials</li>
+                    </ol>
+                </div>
+            }
+            else
+            {
+                <button class="btn btn-primary btn-lg" @onclick="StartAuthentication" disabled="@isAuthenticating">
+                    @if (isAuthenticating)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>Connecting...</span>
+                    }
+                    else
+                    {
+                        <span>Connect to eBay</span>
+                    }
+                </button>
+                <p class="mt-3 text-muted">
+                    Clicking this button will redirect you to eBay to authorize this application.
+                    You'll be asked to sign in to your eBay sandbox account and grant permissions.
+                </p>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>OAuth Scopes</h5>
+        </div>
+        <div class="card-body">
+            <p>This application requests the following permissions:</p>
+            <ul>
+                <li>View and manage inventory</li>
+                <li>View and manage listings</li>
+                <li>View and manage orders</li>
+                <li>View and manage marketing campaigns</li>
+                <li>View account information</li>
+                <li>View fulfillment data</li>
+                <li>Read catalog data</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1rem 1.25rem;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        color: #495057;
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        color: #e83e8c;
+    }
+</style>
+
+@code {
+    private EbayConfig config = new();
+    private bool isAuthenticating = false;
+
+    protected override void OnInitialized()
+    {
+        config = ConfigOptions.Value;
+    }
+
+    private void StartAuthentication()
+    {
+        try
+        {
+            isAuthenticating = true;
+
+            // Generate a random state for security
+            var state = Guid.NewGuid().ToString("N");
+
+            // Define the scopes we need
+            var scopes = new[]
+            {
+                "https://api.ebay.com/oauth/api_scope",
+                "https://api.ebay.com/oauth/api_scope/sell.marketing.readonly",
+                "https://api.ebay.com/oauth/api_scope/sell.marketing",
+                "https://api.ebay.com/oauth/api_scope/sell.inventory.readonly",
+                "https://api.ebay.com/oauth/api_scope/sell.inventory",
+                "https://api.ebay.com/oauth/api_scope/sell.account.readonly",
+                "https://api.ebay.com/oauth/api_scope/sell.account",
+                "https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly",
+                "https://api.ebay.com/oauth/api_scope/sell.fulfillment",
+                "https://api.ebay.com/oauth/api_scope/commerce.catalog.readonly"
+            };
+
+            // Get authorization URL
+            var authUrl = AuthService.GetAuthorizationUrl(state, scopes);
+
+            // Redirect to eBay for authentication
+            NavigationManager.NavigateTo(authUrl, forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error starting authentication: {ex.Message}");
+            isAuthenticating = false;
+        }
+    }
+
+    private string MaskCredential(string credential)
+    {
+        if (credential.Length <= 8)
+            return new string('*', credential.Length);
+
+        return credential.Substring(0, 4) + new string('*', credential.Length - 8) + credential.Substring(credential.Length - 4);
+    }
+}

@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketManager", "MarketManager.csproj", "{480EB56D-3BA7-50A3-D0B7-668E3C75953E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{480EB56D-3BA7-50A3-D0B7-668E3C75953E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{480EB56D-3BA7-50A3-D0B7-668E3C75953E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{480EB56D-3BA7-50A3-D0B7-668E3C75953E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{480EB56D-3BA7-50A3-D0B7-668E3C75953E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C29D6BB-804F-4A75-8421-0E901D66EEDF}
+	EndGlobalSection
+EndGlobal

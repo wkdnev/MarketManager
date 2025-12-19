@@ -1,0 +1,162 @@
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<div class="brand-section">
+    <div class="brand-logo-container">
+        <div class="logo-shield">🛒</div>
+        <div class="logo-text">
+            <span class="logo-nist">MarketManager</span>
+            <span class="logo-compliance">eBay Management</span>
+        </div>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <!-- Dashboard -->
+        <div class="nav-item">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="nav-icon">▦</span>
+                <span>Dashboard</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Buying Section -->
+        <div class="nav-section-header">BUYING</div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="buying/search">
+                <span class="nav-icon">🔍</span>
+                <span>Search Deals</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="buying/watchlist">
+                <span class="nav-icon">👁</span>
+                <span>Watchlist</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="buying/purchases">
+                <span class="nav-icon">📦</span>
+                <span>My Purchases</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="buying/saved-searches">
+                <span class="nav-icon">💾</span>
+                <span>Saved Searches</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Selling Section -->
+        <div class="nav-section-header">SELLING</div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="selling/create-listing">
+                <span class="nav-icon">➕</span>
+                <span>Create Listing</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="selling/active-listings">
+                <span class="nav-icon">📋</span>
+                <span>Active Listings</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="selling/orders">
+                <span class="nav-icon">📮</span>
+                <span>Orders</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="selling/inventory">
+                <span class="nav-icon">📊</span>
+                <span>Inventory</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Analytics Section -->
+        <div class="nav-section-header">ANALYTICS</div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="analytics/sales">
+                <span class="nav-icon">📈</span>
+                <span>Sales Reports</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="analytics/trends">
+                <span class="nav-icon">📊</span>
+                <span>Market Trends</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="analytics/pricing">
+                <span class="nav-icon">💰</span>
+                <span>Price Analysis</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Settings Section -->
+        <div class="nav-section-header">SETTINGS</div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="ebay/settings">
+                <span class="nav-icon">🔗</span>
+                <span>eBay Connection</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="settings/account">
+                <span class="nav-icon">⚙️</span>
+                <span>Account Settings</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="settings/notifications">
+                <span class="nav-icon">🔔</span>
+                <span>Notifications</span>
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
