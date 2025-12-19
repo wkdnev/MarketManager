@@ -4,8 +4,40 @@ using MarketManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure eBay settings
-builder.Services.Configure<EbayConfig>(builder.Configuration.GetSection("EbayConfig"));
+// Configure eBay settings from environment variables with fallback to appsettings.json
+builder.Services.Configure<EbayConfig>(options =>
+{
+    var config = builder.Configuration.GetSection("EbayConfig");
+    
+    // Read from environment variables first, then fall back to config
+    options.ClientId = Environment.GetEnvironmentVariable("EBAY_CLIENT_ID") 
+        ?? config["ClientId"] 
+        ?? string.Empty;
+    
+    options.ClientSecret = Environment.GetEnvironmentVariable("EBAY_CLIENT_SECRET") 
+        ?? config["ClientSecret"] 
+        ?? string.Empty;
+    
+    options.RedirectUri = Environment.GetEnvironmentVariable("EBAY_REDIRECT_URI") 
+        ?? config["RedirectUri"] 
+        ?? "https://localhost:5001/ebay/callback";
+    
+    options.Environment = Environment.GetEnvironmentVariable("EBAY_ENVIRONMENT") 
+        ?? config["Environment"] 
+        ?? "SANDBOX";
+    
+    options.RefreshToken = Environment.GetEnvironmentVariable("EBAY_REFRESH_TOKEN") 
+        ?? config["RefreshToken"];
+    
+    // Log configuration source (without exposing sensitive data)
+    var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Startup");
+    logger.LogInformation("eBay Configuration:");
+    logger.LogInformation("  Environment: {Environment}", options.Environment);
+    logger.LogInformation("  ClientId configured: {HasClientId}", !string.IsNullOrEmpty(options.ClientId));
+    logger.LogInformation("  ClientSecret configured: {HasClientSecret}", !string.IsNullOrEmpty(options.ClientSecret));
+    logger.LogInformation("  RefreshToken configured: {HasRefreshToken}", !string.IsNullOrEmpty(options.RefreshToken));
+    logger.LogInformation("  RedirectUri: {RedirectUri}", options.RedirectUri);
+});
 
 // Add HttpClient for API calls
 builder.Services.AddHttpClient<EbayAuthService>();

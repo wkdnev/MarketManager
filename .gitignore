@@ -83,6 +83,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Allow .env.example as template
+!.env.example
+
 # Publish profiles
 *.pubxml
 *.pubxml.user
